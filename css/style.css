@@ -168,25 +168,21 @@ li:hover {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-
-    
 }
 
-
-
 div {
-    width:70vw;
-    margin: auto;    
+    width: 70vw;
+    margin: auto;
 }
 
 #gallery img {
-    width:70vw;
-    height:70vw;
-    margin:auto;
+    width: 70vw;
+    height: 70vw;
+    margin: auto;
 }
 
 .gal {
-    padding:10px;
+    padding: 10px;
 }
 
 h3 {
@@ -195,9 +191,25 @@ h3 {
     font-family: "Fira Mono", monospace;
     font-size: 1.7em;
     color: rgba(42, 32, 64, 0.75);
-    cursor:pointer;
-   
-    
+    cursor: pointer;
+}
+
+#reffy {
+    color: cornflowerblue !important; 
+}
+
+a { 
+    text-decoration: none;
+    color:cornflowerblue;
+}
+
+li a {
+    color:black;
+}
+
+#reffy:link {
+    color: cornflowerblue !important; 
+    text-decoration: none !important;
 }
 
 h3:link {
@@ -231,26 +243,25 @@ h3:link {
         display: flex;
         flex-direction: row;
         width: 300px;
-        height: 300px;
+        height: auto;
         margin: auto;
-        
+
         justify-content: space-evenly;
-        
     }
 
     #gallery img {
-        width:300px;
-        height:300px;
-        margin:auto;
-    }
-    
-    .gal {
-        padding:10px;
+        width: 250px;
+        height: auto;
+        margin: auto;
     }
 
-    a {
+    .gal {
+        padding: 10px;
+    }
+
+    .toplink {
         text-decoration: none;
-        color:black;
+        color: black;
     }
 
     a:hover {
@@ -261,9 +272,6 @@ h3:link {
     li:link {
         text-decoration: none;
     }
-
-
-
 }
 
 /* blinking cursor */
