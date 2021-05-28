@@ -1,0 +1,352 @@
+body {
+    position: relative;
+    background-color: #eff2f1;
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 400;
+    font-size: 1em;
+    color: #474747;
+    background-color: #eff2f1;
+    line-height: 1.4em;
+}
+
+img { 
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    max-width:50vw;
+}
+
+video {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    max-width:50vw;
+}
+
+pre {
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-left: 3px solid #f36d33;
+    color: #666;
+    page-break-inside: avoid;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 1.6em;
+    margin-left:15%;
+    margin-right:15%;
+    max-width: 100%;
+    overflow: auto;
+    padding: 1em 1.5em;
+    display: block;
+    word-wrap: break-word;
+}
+
+.header {
+    overflow: hidden;
+    margin: auto;
+
+    font-size: 0.7em;
+    width: 80vw;
+}
+
+.toplink {
+    color: rgb(56, 56, 56);
+    font-size: 1.2em;
+    letter-spacing: 0.05em;
+    float: right;
+    padding: 0.5em;
+
+    margin-top: 0.6em;
+}
+
+.toplink:link {
+    text-decoration: none;
+}
+
+.toplink:hover {
+    color: #92374d;
+    transition: all 0.2s ease-out;
+}
+
+.reference {
+    text-decoration: none;
+    font-weight: 600;
+    color: #834f83;
+}
+
+.reference:link {
+    text-decoration: none;
+}
+
+.logo {
+    float: left;
+    width: 55px;
+    margin-top: 10px;
+}
+
+#intro-text {
+    margin: auto;
+    white-space: normal;
+}
+
+#foto-perfil {
+    width: 150px;
+    display: block;
+    border-radius: 75px;
+    margin: 0 auto;
+    border-style: solid 2px white;
+}
+
+#cmd-box {
+    border: 1px solid rgb(3, 3, 3);
+    border-radius: 15px;
+
+    overflow: hidden;
+    background-color: black;
+    max-width: 80vw;
+    justify-content: center;
+    margin: auto;
+    margin-top: 50px;
+}
+
+#subtitle {
+    text-align: center;
+}
+
+span {
+    font-style: italic;
+    color: black;
+    line-height: 1.3em;
+}
+
+p {
+    margin: 15px;
+    word-wrap: break-word;
+    text-align: justify;
+}
+
+#cmd-title {
+    margin: 0;
+    background-color: #6c556c;
+    text-align: left;
+    padding: 7px;
+    padding-left: 12px;
+    color: white;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+#windowbuttons {
+    text-align: right;
+    font-size: 0.5em;
+    float: right;
+    padding: 0;
+    margin: 0;
+}
+
+#icons {
+    width: 150px;
+    margin: 30px auto;
+
+    text-align: center;
+}
+i {
+    font-size: 1.8em;
+    margin-right: 4px;
+
+    color: white;
+}
+
+.p-cmd {
+    color: white;
+    text-align: left;
+    font-family: Fira Mono;
+}
+
+.p-result {
+    color: rgb(45, 160, 0);
+    text-align: left;
+    font-family: Fira Mono;
+}
+
+.fab {
+    color: black;
+}
+
+i:hover {
+    cursor: pointer;
+    color: #92374d;
+    transition: all 0.2s ease-out;
+}
+
+h1 {
+    text-align: center;
+    margin: 35px;
+    font-family: "Fira Mono", monospace;
+    font-size: 1.7em;
+    color: rgba(64, 32, 64, 0.75);
+}
+
+h2 {
+    text-align: center;
+    text-decoration: underline;
+    margin: 35px;
+    font-family: "Fira Mono", monospace;
+    font-size: 1.2em;
+    color: rgba(64, 32, 64, 0.75);
+}
+#footer {
+    text-align: center;
+}
+
+ul {
+    text-align: center;
+    padding: 0;
+}
+li {
+    list-style: none;
+    padding: 10px;
+    letter-spacing: 0.05em;
+}
+
+li:hover {
+    cursor: pointer;
+    color: #92374d;
+    transition: all 0.2s ease-out;
+}
+
+#gallery {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+div {
+    width: 70vw;
+    margin: auto;
+}
+
+#gallery img {
+    width: 70vw;
+    height: 70vw;
+    margin: auto;
+}
+
+.gal {
+    padding: 10px;
+}
+
+h3 {
+    text-align: center;
+    margin: 35px;
+    font-family: "Fira Mono", monospace;
+    font-size: 1.7em;
+    color: rgba(42, 32, 64, 0.75);
+    cursor: pointer;
+}
+
+#reffy {
+    color: cornflowerblue !important;
+}
+
+a {
+    text-decoration: none;
+    color: cornflowerblue;
+}
+
+li a {
+    color: black;
+}
+
+#reffy:link {
+    color: cornflowerblue !important;
+    text-decoration: none !important;
+}
+
+h3:link {
+    text-decoration: none;
+}
+
+@media (min-width: 767px) {
+    #cmd-box {
+        max-width: 60vw;
+    }
+
+    .header {
+        max-width: 60vw;
+    }
+
+    .logo {
+        width: 100px;
+    }
+
+    .toplink {
+        color: rgb(56, 56, 56);
+        font-size: 1.7em;
+        letter-spacing: 0.05em;
+        float: right;
+        padding: 1.2em;
+
+        margin-top: 0.6em;
+    }
+
+    #gallery {
+        display: flex;
+        flex-direction: row;
+        width: 300px;
+        height: auto;
+        margin: auto;
+
+        justify-content: space-evenly;
+    }
+
+    #gallery img {
+        width: 250px;
+        height: auto;
+        margin: auto;
+    }
+
+    .gal {
+        padding: 10px;
+    }
+
+    .toplink {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover {
+        color: #92374d;
+        transition: all 0.2s ease-out;
+    }
+
+    li:link {
+        text-decoration: none;
+    }
+}
+
+/* blinking cursor */
+#cursor {
+    line-height: 17px;
+    margin-left: 3px;
+    -webkit-animation: blink 1.1s infinite;
+    width: 2px;
+    height: 15px;
+    color: rgba(255, 255, 255, 0);
+    letter-spacing: 0px;
+    padding: 0;
+    margin: 0;
+}
+
+@-webkit-keyframes blink {
+    0% {
+        background: rgba(34, 34, 34, 0);
+    }
+
+    80% {
+        background: #6c556c;
+    }
+}

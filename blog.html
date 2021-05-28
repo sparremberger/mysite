@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style copy.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap"
+        rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap"
+        rel="stylesheet"
+    />
+    <link
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css"
+        rel="stylesheet"
+    />
+    <title>Blog</title>
+</head>
+<body>
+    <section class="header">
+        <a href="index.html"
+            ><img class="logo" src="./images/logo.png" alt=""
+        /></a>
+        <a class="toplink" href="mailto:alanrspa@gmail.com">Contato</a>
+        <a class="toplink" href="gallery.html">Galeria </a>
+        <a class="toplink" href="projetos.html">Projetos</a>
+    </section>
+
+    <section id="intro-text">
+
+        <a href="index.html"><h2>< Retornar</h2></a>
+    </section>
+    <div><h1>Criando uma API REST com NET Core 5 e Entity Framework</h1></div>
+    <div id="subtitle">Escrito por Álan Sparremberger em 28 de Maio de 2021 </div><br>
+    <div><p>Este artigo irá lhe ensinar passo-a-passo a criar uma API REST utilizando ASP.NET Core e Entity Framework. Para isso, é necessário que o Microsoft Visual Studio esteja instalado no seu computador, juntamente com as bibliotecas .NET. No meu caso, estarei utilizando a versão 2019 do Visual Studio e a versão 5 do .NET Framework. Caso você não saiba sua versão do .NET Core, basta digitar o comando dotnet --version em seu terminal. </p></div>
+    <div><p>A API em si irá fornecer um sistema de geração de números de cartão de crédito virtual, sendo que:
+        <br> <span>1. A API deverá gerar números aleatórios para o pedido de novo cartão.</span>
+        <br> <span>2. Cada cartão gerado deve estar associado a um email para identificar a pessoa que está utilizando. </span>
+        <br><br> Serão, portanto, dois endpoints, sendo que:
+        <br><br><span>a) Um receberá o email da pessoa e retornará um objeto de resposta com o número do cartão de crédito.</span>
+        <br><span>b) O outro endpoint deverá listar, em ordem de criação, todos os cartões de crédito virtuais de um solicitante (passando seu email como parâmetro).</span>
+        <br><br>Sem mais delongas, vamos pôr a mão na massa.</p></div>
+        <h2>Criando e configurando um novo projeto</h2>
+        <div><p>Para começar, abra seu Visual Studio e crie um novo projeto. O caminho é File > New > New Project¹. Nos templates de projeto, selecione ASP.NET Core Web Api. Em seguida, dê um nome ao seu projeto. Irei chamá-la de “ApiSimples”.</p></div>
+        <br><div><a href="./images/api_images/01_api_simples.jpg"><img src="./images/api_images/01_api_simples.jpg"></a></div>
+        <div><p>Na tela a seguir, em Target Framework, selecione .NET 5.0. Desmarque a opção Configure for HTTPS (não iremos utilizar TSL) e marque a opção Enable OpenAPI support para que possamos utilizar um pequeno programa chamado Swagger, que irá nos ajudar a testar e visualizar a API. </p></div>
+        <br><div><a href="./images/api_images/02_api_simples.jpg"><img src="./images/api_images/02_api_simples.jpg"></a></div>
+        <div><p>Com o projeto pronto, é possível notar dois arquivos, WeatherForecast.cs e WeatherForecastController.cs, este último dento da pasta Controllers. Tratam-se de arquivos padrão do template, e como não iremos utilizá-los, você pode apagar os dois do seu projeto. 
+            Feito isso, estaremos com o projeto criado e prontos para o próximo passo.
+            </p></div>
+        <h2>Instalando dependências</h2>
+        <div><p>Para este projeto, precisaremos instalar, via NuGet Package Manager, algumas dependências que irão simplificar o processo e evitar que tenhamos que reinventar a roda ao implementar nossa API. O primeiro deles é o <span>Microsoft.EntityFrameworkCore</span>. Nas palavras da própria Microsoft: 
+            <br><br><span>O Entity Framework Core (EF Core) é um mapeador de banco de dados de objetos moderno para .NET. Ele dá suporte a consultas LINQ, controle de alterações, atualizações e migrações de esquema.</span><br></br>
+            Instale também a dependência <span>Microsoft.EntityFrameworkCore.Relational</span> e <span>Microsoft.EntityFrameworkCore.SqlServer</span>, necessárias para armazenar e manipular os dados que iremos utilizar. Precisamos, ainda, instalar o <span>Microsoft.EntityFramework.Design</span>, que nos permitirá utilizar a funcionalidade de Scaffolding para gerar as rotas.
+            Por fim, instale o <span>Swagger</span>. Trata-se de um conjunto de ferramentas para criar documentação para APIs, assim como essa que iremos desenvolver. Suas funções serão muito úteis ao longo do projeto. 
+            
+            De posse desses conhecimentos, clique em <span>Project > Manage NuGet Packages</span>. A janela do NuGet irá aparecer. Pesquise e instale o <span>Microsoft.EntityFrameworkCore, Microsoft.EntityFrameworkCore.Relational, Microsoft.EntityFrameworkCore.SqlServer, Microsoft.EntityFramework.Design</span> e em seguida o <span>Swashbuckle.AspNetCore</span>, que irá fornecer o Swagger.
+            </p></div>
+            <br><div><a href="./images/api_images/03_nuget_entity.jpg"><img src="./images/api_images/03_nuget_entity.jpg"></a></div>
+            <div><p>Estamos prontos para começar a programar.</p></div>
+            <h2>Estruturando nossos dados</h2>
+            <div><p>Como já sabemos as características da API, vamos começar criando um modelo para representar nossa estrutura de dados. Iremos precisar armazenar apenas 2 tipos de dados: um endereço de e-mail e um número de cartão de crédito. No Solution Explorer, clique com o botão direito em ApiSimples (ou o título que você tenha escolhido) e em seguida clique em Add > New Folder, para criar uma nova pasta a qual iremos chamar de “Models”. Em seguida clique com o botão direito do mouse na pasta que acabamos de criar, navegue até Add e selecione a opção New Item
+            </p></div>
+            <br><div><a href="./images/api_images/05_new_item.jpg"><img src="./images/api_images/05_new_item.jpg"></a></div>
+<div><p>Na janela que surgir, iremos criar uma nova classe chamada User.cs. 
+    Copie as seguintes linhas de código para o interior dessa classe e salve.
+    </p></div>
+    <pre>public class User
+        {
+                public int ID { get; set; }
+    
+                public string Email { get; set; }
+    
+                public string Card { get; set; }
+    
+                public User()      { }
+        }
+    </pre>
+    <div><p>Essa classe irá representar o objeto User que iremos armazenar no banco de dados. Para tanto, ele irá possuir um ID, que no banco será sua primary key e que será representado por um número inteiro. Terá também o campo Email, que será uma simples string, e Card, também uma string. Para que este guia não fique muito extenso, iremos pular a validação do e-mail, mas esta poderia ser feita com um simples regex ou outras técnicas. Há bastante conteúdo na internet sobre o assunto, de maneira que o tópico poderia até mesmo ter seu próprio artigo.<br><br> Continuemos. 
+
+        Crie uma pasta chamada Data. Essa pasta servirá para armazenarmos os dados que serão gerados para nossa API, assim com o objeto DbContext fornecido pelo Entity Framework. Explico: O Entity Framework nos fornece uma maneira muito simples de se trabalhar usando bancos de dados. Com ele, podemos criar esquemas para representar nossas entidades (nosso objeto User é um deles) e nos comunicar com o banco de dados. Um DbContext representa uma sessão com a database, e é essencialmente a ponte que irá ligar o banco de dados com as classes-entidades que criamos.  
+        
+        Dentro da pasta Data, adicione um novo arquivo chamado UserContext.cs. No interior desse arquivo, insira as seguintes linhas:
+        </p></div>
+        <pre>public class UserContext : DbContext
+        {
+                public UserContext(DbContextOptions<UserContext> options) : base(options)
+                {
+                }
+        
+                public DbSet<User> Users { get; set; }
+        
+                protected override void OnModelCreating(ModelBuilder modelBuilder)
+                {
+                    modelBuilder.Entity<User>().ToTable("User");
+        
+                }
+        }
+        </pre>
+        <div><p>Não esqueça de, no topo do arquivo, inserir as declarações: 
+           <br><pre>using ApiSimples.Models;
+using Microsoft.EntityFrameworkCore;</pre>
+            
+            <br>Agora vamos explicar o que acabamos de fazer. Logo no início, vemos que a classe UserContext tem como base a classe DbContext. Isso significa que ela herda as propriedades e métodos da classe base. Trata-se do conceito de herança, em POO. Por sua vez, em seu construtor, dizemos que a classe irá ser inicializada com as opções armazenadas na variável options, mesmas opções que serão enviadas para sua classe base.
+            
+            <br><br>Na próxima linha, vemos o DbSet. Um objeto DbSet tipicamente corresponde a uma tabela no banco de dados. No nosso caso, a tabela em questão é o nosso objeto User. 
+            
+            Quando o banco de dados é criado, o Entity Framework cria tabelas com o mesmo nome que o nosso objeto DbSet. Como você pode ver, o nosso DbSet se chama Users, no plural. Entre os desenvolvedores de software, não existe um consenso para um padrão de nomes de tabelas - alguns preferem no plural, outros no singular. Para este guia, iremos sobrecarregar o método OnModelCreating, de maneira que ele crie o nome da tabela no singular, como você pode ver na última linha.
+            
+            Seu projeto deve estar como na imagem a seguir.
+            </p></div>
+            <br><div><a href="./images/api_images/06_preview.jpg"><img src="./images/api_images/06_preview.jpg"></a></div>
+            <h2>Inicializando nossos dados</h2>
+            <div><p>Como nossa API irá gerar números de cartão de créditos, podemos implementar uma função que irá gerar números válidos. Melhor ainda: podemos utilizar mais uma excelente técnica de programação chamada reutilização de código. Como mencionado anteriormente, é importante que saibamos como evitar o processo de reinvenção da roda - e certamente existem milhões de soluções disponíveis na internet para gerar números de cartão de crédito. Para tanto, crie mais uma classe na pasta Data chamada CreditCardGenerator.cs. O conteúdo é o seguinte:
+            </p></div>
+            <pre>public class CreditCardGenerator
+            {
+                public static string[] PREFIX_LIST = new[] { "4539", "4556", "4916", "4532" };
+                private static string CreateFakeCreditCardNumber(string prefix, int length)
+                {
+                    string ccnumber = prefix;
+                    while (ccnumber.Length < (length - 1))
+                    {
+                        double rnd = (new Random().NextDouble() * 1.0f - 0f);
+                        ccnumber += Math.Floor(rnd * 10);
+                    }
+        
+                    // reverse number and convert to int
+                    var reversedCCnumberstring = ccnumber.ToCharArray().Reverse();
+                    var reversedCCnumberList = reversedCCnumberstring.Select(c => Convert.ToInt32(c.ToString()));
+                    // calculate sum
+                    int sum = 0;
+                    int pos = 0;
+                    int[] reversedCCnumber = reversedCCnumberList.ToArray();
+                    while (pos < length - 1)
+                    {
+                        int odd = reversedCCnumber[pos] * 2;
+                        if (odd > 9)
+                            odd -= 9;
+        
+                        sum += odd;
+        
+                        if (pos != (length - 2))
+                            sum += reversedCCnumber[pos + 1];
+         
+                        pos += 2;
+                    }
+                    // calculate check digit
+                    int checkdigit =
+                        Convert.ToInt32((Math.Floor((decimal)sum / 10) + 1) * 10 - sum) % 10;
+                    ccnumber += checkdigit;
+                    return ccnumber;
+                }
+                public static IEnumerable<string> GetCreditCardNumbers(string[] prefixList, int length, int howMany)
+                {
+                    var result = new Stack<string>();
+                    for (int i = 0; i < howMany; i++)
+                    {
+                        int randomPrefix = new Random().Next(0, prefixList.Length - 1);
+                        if (randomPrefix > 1)
+                        {
+                            randomPrefix--;
+                        }
+                        string ccnumber = prefixList[randomPrefix];
+                        result.Push(CreateFakeCreditCardNumber(ccnumber, length));
+                    }
+                    return result;
+                }
+                // Gera cartões visa
+                public static IEnumerable<string> GenerateVisaCardNumbers(int howMany)
+                {
+                    return GetCreditCardNumbers(PREFIX_LIST, 16, howMany);
+                }
+                // Gera apenas 1 visa
+                public static string GenerateMasterCardNumber()
+                {
+                    return GetCreditCardNumbers(PREFIX_LIST, 16, 1).First();
+                }
+            }
+            </pre>
+            <div><p>O código é simples o bastante, mas é desnecessário para os propósitos deste artigo explicar como funciona. Cartões de crédito são na verdade gerados por algoritmos, de maneira que os números podem ser válidos ou inválidos. Você pode aprender mais <a href="https://en.wikipedia.org/wiki/Payment_card_number">clicando aqui</a>.</p></div>
+            <div><p>Por fim, crie na pasta Data um arquivo chamado DbInitializer.cs. É com esta classe que iremos inicializar o nosso banco de dados com alguns usuários. </p></div>
+            <pre>public class DbInitializer
+        {
+            public static void Initialize(UserContext context)
+            {
+                context.Database.EnsureCreated();
+    
+                // Look for any students.
+                if (context.Users.Any())
+                {
+                    return;   // DB has been seeded
+                }
+    
+                var users = new User[]
+                {
+                new User{Email="marcos.soares@pop.com.br",Card=CreditCardGenerator.GenerateMasterCardNumber().ToString()},
+                new User{Email="lucas.souto@ig.com.br",Card=CreditCardGenerator.GenerateMasterCardNumber().ToString()},
+                new User{Email="fernando.sampaio@ibest.com.br",Card=CreditCardGenerator.GenerateMasterCardNumber().ToString()},
+                new User{Email="tony.santana@bol.com.br",Card=CreditCardGenerator.GenerateMasterCardNumber().ToString()},
+                };
+                foreach (User u in users)
+                {
+                    context.Users.Add(u);
+                }
+                context.SaveChanges();
+            }
+        } 
+            </pre>
+        <br><div><a href="./images/api_images/07_db_init.jpg"><img src="./images/api_images/07_db_init.jpg"  alt=""></a></div>
+        <div><p>Essa parte do programa primeiro confere se um banco de dados já existe. Caso não seja encontrado, ele é criado e carregado com os dados acima, para fins de testes. Por outro lado, se já existir um banco de dados, ele não faz nada.
+
+            Dessa maneira, poderemos testar o nosso código facilmente, e com alguns usuários na memória já é possível testar nosso método GET assim que ele for implementado. 
+            
+            Precisamos, antes disso, atualizar o nosso arquivo Program.cs. Insira, no interior da classe Program, o seguinte método:
+            </p></div>
+            <pre>private static void CreateDbIfNotExists(IHost host)
+                {
+                    using (var scope = host.Services.CreateScope())
+                    {
+                        var services = scope.ServiceProvider;
+                        try
+                        {
+                            var context = services.GetRequiredService<UserContext>();
+                            DbInitializer.Initialize(context);
+                        }
+                        catch (Exception ex)
+                        {
+                            var logger = services.GetRequiredService<ILogger<Program>>();
+                            logger.LogError(ex, "An error occurred creating the DB.");
+                        }
+                    }
+                }</pre>
+                <div><p>
+                    No método main, comente a linha CreateHostBuilder e insira as seguintes linhas:
+
+                </p></div>
+            <pre>
+                var host = CreateHostBuilder(args).Build();
+
+                CreateDbIfNotExists(host);
+    
+                host.Run();
+    
+            </pre>
+            <div><p>No topo da classe, lembre-se de inserir:</p></div>
+            <pre>
+    using ApiSimples.Data;
+    using Microsoft.Extensions.DependencyInjection;
+                </pre>
+                <div><p>Seu código deve estar assim:</p></div>
+    <br><div><a href="./images/api_images/08_main.jpg"><img src="./images/api_images/08_main.jpg"  alt=""></a></div>     
+    <div><p>O que está acontecendo: 
+       <br> Estamos usando agora uma técnica chamada Dependency Injection, suportada pelo ASP.NET Core. Trata-se de um padrão de projeto que permite realizar uma Inversão de Controle entre classes e suas dependências. O que ocorre é o seguinte:
+            <br>Um objeto DbContext é instanciado e recebido pelo container de dependency injection.
+            <br>Em seguida é chamado o método Initialize da nossa classe DbInitializer criada anteriormente.
+        <br>O código fica dentro de um using para que após a sua execução ele possa ser coletado pelo GC.
+        
+        <br><br>Ainda restam alguns ajustes. No arquivo Startup.cs, insira a seguinte linha de código dentro do método ConfigureServices:
+        </p></div>
+        <pre>services.AddDbContext<UserContext>(options =>
+options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+        </pre>
+        <br><div><a href="./images/api_images/09_configure.jpg"><img src="./images/api_images/09_configure.jpg"  alt=""></a></div>
+        <div><p>Abra o arquivo appsettings.json e insira bem no início:</p></div>
+        <pre>
+"ConnectionStrings": {
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=creditcarddatabase;Trusted_Connection=True;MultipleActiveResultSets=true"
+},
+                
+        </pre>
+        <div><p>Essas duas etapas serviram para que possamos usar o Microsoft SQL Server Express LocalDB (mssqllocaldb). Trata-se de uma instância de um banco de dados SQL em versão diminuta, especialmente para desenvolvedores, de maneira que não seja necessário instalarmos e configurarmos um banco de dados inteiro apenas para testes. Isso nos poupa tempo de desenvolvimento, de forma que podemos finalmente passar para a próxima etapa: os endpoints.</p></div>
+
+        <h2>Os endpoints</h2>
+        <div><p>Toda API que se preze precisa deles. São os métodos HTTP GET, POST, DELETE, etc. Exceto que para esse projeto, só usaremos dois deles: GET e POST. 
+
+            O Visual Studio nos fornece uma ferramente maravilhosa chamada Scaffolding.  Com ela, poderemos gerar automaticamente o “esqueleto” das rotas da sua API. Fica mais fácil, então, apenas preencher esses métodos com a lógica necessária. Para tanto, crie uma pasta chamada Controllers, e em seguida clique com o botão direito nessa mesma pasta, Add > New Scaffolded Item.
+            </p></div>
+            <br><div><a href="./images/api_images/trascaff.jpg"><img src="./images/api_images/trascaff.jpg"></a></div>
+            <div><p>Na janela que surgir, escolha a opção “API Controller with actions, using Entity Framework”</p></div>
+            <br><div><a href="./images/api_images/11_scaffold2.jpg"><img src="./images/api_images/11_scaffold2.jpg"></a></div>
+        <div><p>Preencha como na imagem, caso tenha usado os mesmos nomes de classes e namespace que eu. Em seguida clique em Add e aguarde. É nesse momento que usamos o Microsoft.EntityFramework.Design, adicionado lá no início. Sem ele, o scaffolding não saberia como gerar as rotas de maneira apropriada utilizando o EF. 
+
+            <br><br>Precisamos agora de 4 métodos simples. O primeiro será um GET
+            </p></div>
+        <pre>
+        // GET: /users
+        [HttpGet("/users/")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        {
+            return await _context.Users.ToListAsync();
+        }
+        </pre>
+
+        <div><p>Essa parte do código é responsável por enviar uma lista de usuários completa. Tal endpoint não era necessário, mas como é de fácil exclusão e facilita o debug, iremos implementá-lo.
+
+            <br><br>Devemos colocar mais um método GET: 
+            </p></div>
+    <pre>
+        // GET: /users/id
+        [HttpGet("/users/{id}")]
+        public async Task<ActionResult<User>> GetUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+    </pre>
+    <div><p>Cada entrada no banco de dados possui um ID único, mesmo múltiplas entradas com o mesmo e-mail. Tal ID é gerado automaticamente pelo Entity Framework, mas seu real propósito é permitir que possamos, ao buscar por e-mail, exibir a lista de cartões de um usuário na ordem em que ela foi criada. Por isso que cada objeto User tem, além de um e-mail e um cartão, um ID como chave primária.
+
+        <br><br>Nossa próxima rota é um POST:
+        </p></div>
+    <pre>
+        // POST: /users
+        [HttpPost("/users/")]
+        public async Task<ActionResult<User>> PostUser(string email)
+        {
+            User user = new User();
+            user.Email = email;
+            user.Card = CreditCardGenerator.GenerateMasterCardNumber();
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetUser", new { id = user.ID }, user);
+        } 
+    </pre>
+    <div><p>Também bastante simples, o usuário fornece um endereço de email (que no nosso caso não será validado - confiamos no usuário!) e o programa irá criar uma entrada no banco de dados contendo seu e-mail, um cartão gerado aleatoriamente e um ID. 
+
+        <br><br>Por fim, implementamos uma rota GET para buscar cartões por e-mail:
+        </p></div>
+    <pre>
+        // GET: /users/email
+        [HttpGet("/users/email/{email}")]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsersByEmail(string email)
+        {
+            return await _context.Users.Where(u => u.Email == email).ToListAsync();
+        }
+    </pre>
+    <div><p>Ao inserir um e-mail, este método retorna uma lista de cartões que pertencem a este mesmo e-mail. 
+
+        <br><br>Adicione essas três linhas lá em cima e estamos prontos para compilar: 
+        </p></div>
+    <pre>
+        using Microsoft.EntityFrameworkCore;
+        using ApiSimples.Data;
+        using ApiSimples.Models;
+        
+    </pre>
+
+    <h2>Testando</h2>
+    <br><div><a href="./images/api_images/12swagger.jpg"><img src="./images/api_images/12swagger.jpg"></a></div>
+    <div><p>É apenas neste momento que entendemos o porquê de termos instalado o Swagger no início deste guia. É ele que irá nos fornecer essa bela interface. Com ela, podemos testar cada um dos métodos, e ver o esquema de dados. O Swagger faz muito mais que isso, claro - provendo ferramentas para elaboração de uma extensa documentação da sua API. Vamos nos ater, por enquanto, às suas funcionalidades mais singelas. Vejamos um teste:</p></div>
+    <br><div> <video width="620" controls>
+        <source src="./images/api_images/testing.mp4" type="video/mp4">
+
+      Your browser does not support the video tag.
+      </video> </div>
+
+    <div><p>Se apenas digitarmos a rota pelo navegador, recebemos os dados em formato JSON.</p></div>
+    <br><div><a href="./images/api_images/13 done.jpg"><img src="./images/api_images/13 done.jpg"></a></div>
+    <div><p>Podemos fazer também uma requisição POST pelo Insomnia:</p></div>
+    <br><div><a href="./images/api_images/insomnia.jpg"><img src="./images/api_images/insomnia.jpg"></a></div>
+
+    <br><div><p>Com isso, finalizamos esse artigo. Espero que tenha ficado tudo bem claro, e que você tenha aprendido tanto quando eu aprendi ao elaborar esse material.
+    O código deste projeto está disponível em <a href="https://github.com/sparremberger/ApiSimples/">meu GitHub.</a>
+    <br><br>Em caso de dúvidas, não hesite em entrar em contato. Um grande abraço e até a próxima.</p></div><br><br><br>
+    <section id="intro-text">
+
+        <a href="index.html"><h2>< Retornar</h2></a>
+    </section>
+    <section id="footer">
+        <br />
+        <h1>Fale comigo!</h1>
+        <ul>
+            <li><a href="mailto:alanrspa@gmail.com">Email</a></li>
+            <li>
+                <a
+                    href="https://www.linkedin.com/in/alan-sparremberger-72a145115/"
+                    target="_blank"
+                    >LinkedIn</a
+                >
+            </li>
+            <li>
+                <a href="https://github.com/sparremberger" target="_blank"
+                    >GitHub</a
+                >
+            </li>
+            <li>
+                <a
+                    href="https://instagram.com/sparremberger_"
+                    target="_blank"
+                    >Instagram</a
+                >
+            </li>
+            <li><a href="">Twitter</a></li>
+        </ul>
+        <br /><br /><br />
+        <p>Álan Sparremberger © 2021</p>
+    </section>
+</body>
+</html>
